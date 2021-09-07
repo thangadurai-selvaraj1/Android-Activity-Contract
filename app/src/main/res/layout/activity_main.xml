@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.appcompat.widget.LinearLayoutCompat xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:layout_gravity="center"
+    android:gravity="center"
+    android:orientation="vertical"
+    tools:context=".ui.MainActivity">
+
+    <Button
+        android:id="@+id/btn_get_photos"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="get photos" />
+
+    <Button
+        android:id="@+id/btn_request_permission"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="request single permission" />
+
+    <Button
+        android:id="@+id/btn_request_multiple_permission"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="request multiple permission" />
+
+    <Button
+        android:id="@+id/btn_launch_activity_result"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="launch activity result" />
+
+</androidx.appcompat.widget.LinearLayoutCompat>
