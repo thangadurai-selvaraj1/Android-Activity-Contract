@@ -12,13 +12,25 @@
         android:id="@+id/btn_get_photos"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="get photos" />
+        android:text="get photo" />
+
+    <Button
+        android:id="@+id/btn_get_videos"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="get video" />
+
+    <Button
+        android:id="@+id/btn_capture_photo"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="capture photo" />
 
     <Button
         android:id="@+id/btn_request_permission"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="request single permission" />
+        android:text="request single permission (Camera)" />
 
     <Button
         android:id="@+id/btn_request_multiple_permission"

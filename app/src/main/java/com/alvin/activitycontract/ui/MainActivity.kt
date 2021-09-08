@@ -1,6 +1,8 @@
 package com.alvin.activitycontract.ui
 
+import android.content.Intent
 import android.os.Bundle
+import android.provider.MediaStore
 import android.view.View
 import androidx.lifecycle.lifecycleScope
 import com.alvin.activitycontract.databinding.ActivityMainBinding
@@ -8,6 +10,7 @@ import com.alvin.activitycontract.extensions.registerListeners
 import com.alvin.activitycontract.utils.ActivityContractObserver.Companion.CAMERA_PERMISSION
 import com.alvin.activitycontract.utils.ActivityContractObserver.Companion.READ_CONTACTS_PERMISSION
 import kotlinx.coroutines.flow.collect
+
 
 class MainActivity : BaseActivity(), View.OnClickListener {
 
@@ -22,6 +25,8 @@ class MainActivity : BaseActivity(), View.OnClickListener {
             this@MainActivity.registerListeners(btnLaunchActivityResult,
                 btnRequestMultiplePermission,
                 btnGetPhotos,
+                btnCapturePhoto,
+                btnGetVideos,
                 btnRequestPermission)
         }
     }
@@ -31,7 +36,7 @@ class MainActivity : BaseActivity(), View.OnClickListener {
             when (v) {
                 btnGetPhotos -> {
                     lifecycleScope.launchWhenResumed {
-                        observer.selectImage().let { result ->
+                        observer.pickImage().let { result ->
                             result.collect {
                                 it?.let {
                                     showMessage(it.toString())
@@ -40,13 +45,48 @@ class MainActivity : BaseActivity(), View.OnClickListener {
                         }
                     }
                 }
+
+                btnGetVideos -> {
+                    lifecycleScope.launchWhenResumed {
+                        observer.pickVideo().let { result ->
+                            result.collect {
+                                it?.let {
+                                    showMessage(it.toString())
+                                }
+                            }
+                        }
+                    }
+                }
+
+                btnCapturePhoto -> {
+                    lifecycleScope.launchWhenResumed {
+                        observer.requestSinglePermission(CAMERA_PERMISSION).let { result ->
+                            result.collect {
+                                it?.let {
+                                    if (it) {
+                                        val cameraIntent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
+                                        observer.takePicture(cameraIntent).collect {
+                                            it?.let {
+                                                if (it.resultCode == RESULT_OK) {
+                                                    showMessage("$it")
+                                                }
+                                            }
+                                        }
+                                    } else
+                                        showMessage("Need Camera Permission")
+                                }
+                            }
+                        }
+                    }
+                }
+
                 btnRequestPermission -> {
                     lifecycleScope.launchWhenResumed {
                         observer.requestSinglePermission(CAMERA_PERMISSION).let { result ->
                             result.collect {
                                 it?.let {
                                     if (it)
-                                        showMessage("Granted")
+                                        showMessage("Already Granted")
                                     else
                                         showMessage("Denied")
                                 }
@@ -67,13 +107,14 @@ class MainActivity : BaseActivity(), View.OnClickListener {
 
                 btnLaunchActivityResult -> {
                     lifecycleScope.launchWhenResumed {
-                        observer.startForResult<SecondActivity>(this@MainActivity).collect {
-                            it?.let {
-                                if (it.resultCode == SecondActivity.RESULT_CODE) {
-                                    showMessage("${it.data?.getStringExtra(SecondActivity.NAME)}")
+                        observer.startForResultForActivity<SecondActivity>(this@MainActivity)
+                            .collect {
+                                it?.let {
+                                    if (it.resultCode == SecondActivity.RESULT_CODE) {
+                                        showMessage("${it.data?.getStringExtra(SecondActivity.NAME)}")
+                                    }
                                 }
                             }
-                        }
                     }
                 }
             }
