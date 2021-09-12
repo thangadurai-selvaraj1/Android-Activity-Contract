@@ -10,7 +10,12 @@ import androidx.activity.result.ActivityResultRegistry
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.lifecycle.DefaultLifecycleObserver
 import androidx.lifecycle.LifecycleOwner
+import androidx.lifecycle.coroutineScope
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.launch
 
 class ActivityContractObserver(private val registry: ActivityResultRegistry) :
     DefaultLifecycleObserver {
@@ -35,24 +40,42 @@ class ActivityContractObserver(private val registry: ActivityResultRegistry) :
             owner,
             ActivityResultContracts.GetContent()) {
             pickImageResult.value = it
+            CoroutineScope(Dispatchers.IO).launch {
+                delay(20L)
+                pickImageResult = MutableStateFlow(null)
+            }
         }
 
         pickVideoContract = registry.register(GET_VIDEO_CONTRACT_KEY,
             owner,
             ActivityResultContracts.GetContent()) {
             pickVideoResult.value = it
+            CoroutineScope(Dispatchers.IO).launch {
+                delay(20L)
+                pickVideoResult = MutableStateFlow(null)
+            }
+
+
         }
 
         takePictureContract = registry.register(TAKE_PICTURE_CONTRACT_KEY,
             owner,
             ActivityResultContracts.StartActivityForResult()) {
             takePictureResult.value = it
+            CoroutineScope(Dispatchers.IO).launch {
+                delay(20L)
+                takePictureResult = MutableStateFlow(null)
+            }
         }
 
         startForResultContract = registry.register(START_FOR_RESULT_CONTRACT_KEY,
             owner,
             ActivityResultContracts.StartActivityForResult()) {
             startForResultResult.value = it
+            CoroutineScope(Dispatchers.IO).launch {
+                delay(20L)
+                startForResultResult = MutableStateFlow(null)
+            }
         }
 
         requestSinglePermissionContract =
@@ -60,6 +83,10 @@ class ActivityContractObserver(private val registry: ActivityResultRegistry) :
                 owner,
                 ActivityResultContracts.RequestPermission()) {
                 requestSinglePermissionResult.value = it
+                CoroutineScope(Dispatchers.IO).launch {
+                    delay(20L)
+                    requestSinglePermissionResult = MutableStateFlow(null)
+                }
             }
 
         requestMultiplePermissionContract =
@@ -67,31 +94,41 @@ class ActivityContractObserver(private val registry: ActivityResultRegistry) :
                 owner,
                 ActivityResultContracts.RequestMultiplePermissions()) {
                 requestMultiplePermissionResult.value = it
+                CoroutineScope(Dispatchers.IO).launch {
+                    delay(20L)
+                    requestMultiplePermissionResult = MutableStateFlow(null)
+                }
             }
     }
 
-    fun pickImage() {
+    fun pickImage(): MutableStateFlow<Uri?> {
         pickImageContract.launch("image/*")
+        return pickImageResult
     }
 
-    fun pickVideo() {
+    fun pickVideo(): MutableStateFlow<Uri?> {
         pickVideoContract.launch("video/*")
+        return pickVideoResult
     }
 
-    fun takePicture(intent: Intent) {
+    fun takePicture(intent: Intent): MutableStateFlow<ActivityResult?> {
         takePictureContract.launch(intent)
+        return takePictureResult
     }
 
-    fun requestSinglePermission(permission: String) {
+    fun requestSinglePermission(permission: String): MutableStateFlow<Boolean?> {
         requestSinglePermissionContract.launch(permission)
+        return requestSinglePermissionResult
     }
 
-    fun requestMultiplePermission(vararg permission: String){
+    fun requestMultiplePermission(vararg permission: String): MutableStateFlow<Map<String, Boolean>?> {
         requestMultiplePermissionContract.launch(arrayOf(*permission))
+        return requestMultiplePermissionResult
     }
 
-    inline fun <reified T : Any> startForResultForActivity(context: Context) {
+    inline fun <reified T : Any> startForResultForActivity(context: Context): MutableStateFlow<ActivityResult?> {
         startForResultContract.launch(Intent(context, T::class.java))
+        return startForResultResult
     }
 
 

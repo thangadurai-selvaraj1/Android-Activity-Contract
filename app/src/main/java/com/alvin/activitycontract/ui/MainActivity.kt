@@ -36,13 +36,9 @@ class MainActivity : BaseActivity(), View.OnClickListener {
             when (v) {
                 btnGetPhotos -> {
                     lifecycleScope.launchWhenResumed {
-                        observer.apply {
-                            pickImage()
-                            pickImageResult.collect {
-                                it?.let {
-                                    showMessage(it.toString())
-                                    setEmpty()
-                                }
+                        observer.pickImage().collect {
+                            it?.let {
+                                showMessage(it.toString())
                             }
                         }
                     }
@@ -50,37 +46,30 @@ class MainActivity : BaseActivity(), View.OnClickListener {
 
                 btnGetVideos -> {
                     lifecycleScope.launchWhenResumed {
-                        observer.apply {
-                            pickVideo()
-                            pickVideoResult.collect {
-                                it?.let {
-                                    showMessage(it.toString())
-                                    setEmpty()
-                                }
+                        observer.pickVideo().collect {
+                            it?.let {
+                                showMessage(it.toString())
                             }
                         }
+
                     }
                 }
 
                 btnCapturePhoto -> {
                     lifecycleScope.launchWhenResumed {
                         observer.apply {
-                            requestSinglePermission(CAMERA_PERMISSION)
-                            requestSinglePermissionResult.collect { requestSinglePermissionResult ->
+                            requestSinglePermission(CAMERA_PERMISSION).collect { requestSinglePermissionResult ->
                                 requestSinglePermissionResult?.let {
                                     if (it) {
                                         val cameraIntent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
                                         takePicture(cameraIntent)
-                                        takePictureResult
                                             .collect { takePictureResult ->
                                                 takePictureResult?.let {
                                                     showMessage("$takePictureResult")
-                                                    setEmpty()
                                                 }
                                             }
                                     } else
                                         showMessage("Need Camera Permission")
-                                    setEmpty()
                                 }
                             }
                         }
@@ -89,43 +78,37 @@ class MainActivity : BaseActivity(), View.OnClickListener {
 
                 btnRequestPermission -> {
                     lifecycleScope.launchWhenResumed {
-                        observer.apply {
-                            requestSinglePermission(CAMERA_PERMISSION)
-                            requestSinglePermissionResult.collect {
+                        observer.requestSinglePermission(CAMERA_PERMISSION)
+                            .collect {
                                 it?.let {
                                     showMessage(it.toString())
-                                    setEmpty()
                                 }
                             }
-                        }
+
                     }
                 }
                 btnRequestMultiplePermission -> {
                     lifecycleScope.launchWhenResumed {
-                        observer.apply {
-                            requestMultiplePermission(CAMERA_PERMISSION,
-                                READ_CONTACTS_PERMISSION)
-                            requestMultiplePermissionResult.collect {
+                        observer.requestMultiplePermission(CAMERA_PERMISSION,
+                            READ_CONTACTS_PERMISSION)
+                            .collect {
                                 it?.let {
                                     showMessage(it.toString())
-                                    setEmpty()
                                 }
                             }
-                        }
+
                     }
                 }
 
                 btnLaunchActivityResult -> {
                     lifecycleScope.launchWhenResumed {
-                        observer.apply {
-                            startForResultForActivity<SecondActivity>(this@MainActivity)
-                            startForResultResult.collect {
+                        observer
+                            .startForResultForActivity<SecondActivity>(this@MainActivity)
+                            .collect {
                                 it?.let {
                                     showMessage(it.toString())
-                                    setEmpty()
                                 }
                             }
-                        }
                     }
                 }
             }
