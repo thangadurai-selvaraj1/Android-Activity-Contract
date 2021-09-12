@@ -36,10 +36,12 @@ class MainActivity : BaseActivity(), View.OnClickListener {
             when (v) {
                 btnGetPhotos -> {
                     lifecycleScope.launchWhenResumed {
-                        observer.pickImage().let { result ->
-                            result.collect {
+                        observer.apply {
+                            pickImage()
+                            pickImageResult.collect {
                                 it?.let {
                                     showMessage(it.toString())
+                                    setEmpty()
                                 }
                             }
                         }
@@ -48,10 +50,12 @@ class MainActivity : BaseActivity(), View.OnClickListener {
 
                 btnGetVideos -> {
                     lifecycleScope.launchWhenResumed {
-                        observer.pickVideo().let { result ->
-                            result.collect {
+                        observer.apply {
+                            pickVideo()
+                            pickVideoResult.collect {
                                 it?.let {
                                     showMessage(it.toString())
+                                    setEmpty()
                                 }
                             }
                         }
@@ -60,20 +64,23 @@ class MainActivity : BaseActivity(), View.OnClickListener {
 
                 btnCapturePhoto -> {
                     lifecycleScope.launchWhenResumed {
-                        observer.requestSinglePermission(CAMERA_PERMISSION).let { result ->
-                            result.collect {
-                                it?.let {
+                        observer.apply {
+                            requestSinglePermission(CAMERA_PERMISSION)
+                            requestSinglePermissionResult.collect { requestSinglePermissionResult ->
+                                requestSinglePermissionResult?.let {
                                     if (it) {
                                         val cameraIntent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
-                                        observer.takePicture(cameraIntent).collect {
-                                            it?.let {
-                                                if (it.resultCode == RESULT_OK) {
-                                                    showMessage("$it")
+                                        takePicture(cameraIntent)
+                                        takePictureResult
+                                            .collect { takePictureResult ->
+                                                takePictureResult?.let {
+                                                    showMessage("$takePictureResult")
+                                                    setEmpty()
                                                 }
                                             }
-                                        }
                                     } else
                                         showMessage("Need Camera Permission")
+                                    setEmpty()
                                 }
                             }
                         }
@@ -82,13 +89,12 @@ class MainActivity : BaseActivity(), View.OnClickListener {
 
                 btnRequestPermission -> {
                     lifecycleScope.launchWhenResumed {
-                        observer.requestSinglePermission(CAMERA_PERMISSION).let { result ->
-                            result.collect {
+                        observer.apply {
+                            requestSinglePermission(CAMERA_PERMISSION)
+                            requestSinglePermissionResult.collect {
                                 it?.let {
-                                    if (it)
-                                        showMessage("Already Granted")
-                                    else
-                                        showMessage("Denied")
+                                    showMessage(it.toString())
+                                    setEmpty()
                                 }
                             }
                         }
@@ -96,10 +102,14 @@ class MainActivity : BaseActivity(), View.OnClickListener {
                 }
                 btnRequestMultiplePermission -> {
                     lifecycleScope.launchWhenResumed {
-                        observer.requestMultiplePermission(CAMERA_PERMISSION,
-                            READ_CONTACTS_PERMISSION).collect {
-                            it?.let {
-                                showMessage("Keys ${it.keys} : Values ${it.values}")
+                        observer.apply {
+                            requestMultiplePermission(CAMERA_PERMISSION,
+                                READ_CONTACTS_PERMISSION)
+                            requestMultiplePermissionResult.collect {
+                                it?.let {
+                                    showMessage(it.toString())
+                                    setEmpty()
+                                }
                             }
                         }
                     }
@@ -107,14 +117,15 @@ class MainActivity : BaseActivity(), View.OnClickListener {
 
                 btnLaunchActivityResult -> {
                     lifecycleScope.launchWhenResumed {
-                        observer.startForResultForActivity<SecondActivity>(this@MainActivity)
-                            .collect {
+                        observer.apply {
+                            startForResultForActivity<SecondActivity>(this@MainActivity)
+                            startForResultResult.collect {
                                 it?.let {
-                                    if (it.resultCode == SecondActivity.RESULT_CODE) {
-                                        showMessage("${it.data?.getStringExtra(SecondActivity.NAME)}")
-                                    }
+                                    showMessage(it.toString())
+                                    setEmpty()
                                 }
                             }
+                        }
                     }
                 }
             }

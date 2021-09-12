@@ -22,12 +22,12 @@ class ActivityContractObserver(private val registry: ActivityResultRegistry) :
     lateinit var takePictureContract: ActivityResultLauncher<Intent>
     private lateinit var pickVideoContract: ActivityResultLauncher<String>
 
-    private var requestSinglePermissionResult = MutableStateFlow<Boolean?>(null)
-    private var requestMultiplePermissionResult = MutableStateFlow<Map<String, Boolean>?>(null)
+    var requestSinglePermissionResult = MutableStateFlow<Boolean?>(null)
+    var requestMultiplePermissionResult = MutableStateFlow<Map<String, Boolean>?>(null)
     var startForResultResult = MutableStateFlow<ActivityResult?>(null)
-    private var pickImageResult = MutableStateFlow<Uri?>(null)
+    var pickImageResult = MutableStateFlow<Uri?>(null)
     var takePictureResult = MutableStateFlow<ActivityResult?>(null)
-    private var pickVideoResult = MutableStateFlow<Uri?>(null)
+    var pickVideoResult = MutableStateFlow<Uri?>(null)
 
     override fun onCreate(owner: LifecycleOwner) {
 
@@ -70,40 +70,28 @@ class ActivityContractObserver(private val registry: ActivityResultRegistry) :
             }
     }
 
-    fun pickImage(): MutableStateFlow<Uri?> {
-        pickImageResult.value = null
+    fun pickImage() {
         pickImageContract.launch("image/*")
-        return pickImageResult
     }
 
-    fun pickVideo(): MutableStateFlow<Uri?> {
-        pickVideoResult.value = null
+    fun pickVideo() {
         pickVideoContract.launch("video/*")
-        return pickVideoResult
     }
 
-    fun takePicture(intent: Intent): MutableStateFlow<ActivityResult?> {
-        takePictureResult.value = null
+    fun takePicture(intent: Intent) {
         takePictureContract.launch(intent)
-        return takePictureResult
     }
 
-    fun requestSinglePermission(permission: String): MutableStateFlow<Boolean?> {
-        requestSinglePermissionResult.value = null
+    fun requestSinglePermission(permission: String) {
         requestSinglePermissionContract.launch(permission)
-        return requestSinglePermissionResult
     }
 
-    fun requestMultiplePermission(vararg permission: String): MutableStateFlow<Map<String, Boolean>?> {
-        requestMultiplePermissionResult.value = null
+    fun requestMultiplePermission(vararg permission: String){
         requestMultiplePermissionContract.launch(arrayOf(*permission))
-        return requestMultiplePermissionResult
     }
 
-    inline fun <reified T : Any> startForResultForActivity(context: Context): MutableStateFlow<ActivityResult?> {
-        startForResultResult.value = null
+    inline fun <reified T : Any> startForResultForActivity(context: Context) {
         startForResultContract.launch(Intent(context, T::class.java))
-        return startForResultResult
     }
 
 
@@ -121,7 +109,19 @@ class ActivityContractObserver(private val registry: ActivityResultRegistry) :
         const val READ_EXTERNAL_PERMISSION = Manifest.permission.READ_EXTERNAL_STORAGE
         const val WRITE_EXTERNAL_PERMISSION = Manifest.permission.WRITE_EXTERNAL_STORAGE
         const val READ_CONTACTS_PERMISSION = Manifest.permission.READ_CONTACTS
-
     }
+
+    /**
+     *
+     * */
+    fun setEmpty() {
+        requestSinglePermissionResult.value = null
+        requestMultiplePermissionResult.value = null
+        startForResultResult.value = null
+        pickImageResult.value = null
+        takePictureResult.value = null
+        pickVideoResult.value = null
+    }
+
 }
 
