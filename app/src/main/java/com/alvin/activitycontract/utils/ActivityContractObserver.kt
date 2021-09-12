@@ -10,7 +10,6 @@ import androidx.activity.result.ActivityResultRegistry
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.lifecycle.DefaultLifecycleObserver
 import androidx.lifecycle.LifecycleOwner
-import androidx.lifecycle.coroutineScope
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
@@ -27,12 +26,12 @@ class ActivityContractObserver(private val registry: ActivityResultRegistry) :
     lateinit var takePictureContract: ActivityResultLauncher<Intent>
     private lateinit var pickVideoContract: ActivityResultLauncher<String>
 
-    var requestSinglePermissionResult = MutableStateFlow<Boolean?>(null)
-    var requestMultiplePermissionResult = MutableStateFlow<Map<String, Boolean>?>(null)
+    private var requestSinglePermissionResult = MutableStateFlow<Boolean?>(null)
+    private var requestMultiplePermissionResult = MutableStateFlow<Map<String, Boolean>?>(null)
     var startForResultResult = MutableStateFlow<ActivityResult?>(null)
-    var pickImageResult = MutableStateFlow<Uri?>(null)
-    var takePictureResult = MutableStateFlow<ActivityResult?>(null)
-    var pickVideoResult = MutableStateFlow<Uri?>(null)
+    private var pickImageResult = MutableStateFlow<Uri?>(null)
+    private var takePictureResult = MutableStateFlow<ActivityResult?>(null)
+    private var pickVideoResult = MutableStateFlow<Uri?>(null)
 
     override fun onCreate(owner: LifecycleOwner) {
 
