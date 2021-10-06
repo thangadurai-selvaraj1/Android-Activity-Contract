@@ -5,7 +5,7 @@
 
     implementation ("androidx.activity:activity-ktx:$activity_version")
     implementation ("androidx.fragment:fragment-ktx:$fragment_version")
-    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:$coroutine_version")
+    implementation ("org.jetbrains.kotlinx:kotlinx-coroutines-android:$coroutine_version")
     
    Get latest version from Activity [here](https://developer.android.com/jetpack/androidx/releases/activity) 
    Fragment [here](https://developer.android.com/jetpack/androidx/releases/fragment) 
